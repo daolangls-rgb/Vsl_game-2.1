@@ -5,11 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#58cc02" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <title>VSL Quest 2.1 - Học Ngôn Ngữ Ký Hiệu Việt Nam</title>
-
-  <!-- Thư viện Google MediaPipe Hands -->
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+  <title>VSL Quest 2.2 - Học Ngôn Ngữ Ký Hiệu Việt Nam</title>
 
   <style>
     :root {
@@ -51,7 +47,6 @@
       box-shadow: 0 0 25px rgba(0, 0, 0, 0.08);
     }
 
-    /* Header */
     .header {
       padding: 12px 16px;
       background: var(--card);
@@ -92,7 +87,6 @@
     .pill-xp { background: #fffaf0; color: var(--warning); border: 1px solid #feebc8; }
     .pill-done { background: #f0fff4; color: var(--primary-dark); border: 1px solid #c6f6d5; }
 
-    /* Navigation Tabs */
     .nav-tabs {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -111,7 +105,6 @@
       cursor: pointer;
       background: #e2e8f0;
       color: #475569;
-      transition: all 0.2s;
     }
 
     .tab-btn.active {
@@ -120,7 +113,6 @@
       box-shadow: 0 3px 0 var(--secondary-dark);
     }
 
-    /* Content */
     .content {
       flex: 1;
       padding: 12px 14px;
@@ -132,7 +124,6 @@
 
     .hidden { display: none !important; }
 
-    /* Thanh chọn nhanh ký hiệu */
     .level-selector {
       display: flex;
       gap: 6px;
@@ -166,7 +157,6 @@
       color: var(--primary-dark);
     }
 
-    /* Thẻ hướng dẫn kèm Icon SVG chuẩn */
     .prompt-card {
       background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
       border: 2px solid #bae6fd;
@@ -210,12 +200,11 @@
       line-height: 1.35;
     }
 
-    /* Sơ đồ 5 ngón tay trực quan */
     .finger-guide {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
       gap: 5px;
-      background: rgba(255, 255, 255, 0.75);
+      background: rgba(255, 255, 255, 0.85);
       padding: 6px;
       border-radius: 10px;
     }
@@ -237,7 +226,6 @@
       color: #15803d;
     }
 
-    /* Khung Camera chống méo 100% */
     .camera-outer {
       width: 100%;
       background: #0f172a;
@@ -247,7 +235,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 240px;
+      min-height: 250px;
       border: 3px solid #cbd5e0;
     }
 
@@ -294,7 +282,20 @@
       font-size: 0.78rem;
       font-weight: 600;
       cursor: pointer;
-      backdrop-filter: blur(4px);
+    }
+
+    .start-cam-overlay {
+      position: absolute;
+      z-index: 8;
+      background: var(--secondary);
+      color: #fff;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 14px;
+      font-weight: 800;
+      font-size: 0.95rem;
+      box-shadow: 0 4px 0 var(--secondary-dark);
+      cursor: pointer;
     }
 
     .ai-badge {
@@ -302,17 +303,16 @@
       bottom: 10px;
       left: 10px;
       right: 10px;
-      background: rgba(15, 23, 42, 0.84);
+      background: rgba(15, 23, 42, 0.86);
       color: #fff;
       padding: 8px 12px;
       border-radius: 10px;
-      font-size: 0.84rem;
+      font-size: 0.82rem;
       font-weight: 600;
       text-align: center;
-      backdrop-filter: blur(4px);
+      z-index: 9;
     }
 
-    /* Thanh giữ tư thế */
     .progress-section {
       display: flex;
       flex-direction: column;
@@ -355,12 +355,6 @@
       cursor: pointer;
     }
 
-    .btn-main:active {
-      transform: translateY(2px);
-      box-shadow: 0 2px 0 var(--primary-dark);
-    }
-
-    /* Từ điển (Flashcards) */
     .dict-grid {
       display: flex;
       flex-direction: column;
@@ -375,12 +369,6 @@
       border: 2px solid #e2e8f0;
       border-radius: 14px;
       background: #fff;
-      transition: 0.15s;
-    }
-
-    .dict-card:active {
-      background: #f0f9ff;
-      border-color: var(--secondary);
     }
 
     .dict-svg {
@@ -399,7 +387,6 @@
     .dict-title { font-weight: 800; font-size: 1rem; color: var(--text); }
     .dict-desc { font-size: 0.82rem; color: var(--muted); margin-top: 3px; line-height: 1.3; }
 
-    /* Trắc nghiệm */
     .quiz-box {
       background: #f8fafc;
       border: 2px solid #e2e8f0;
@@ -421,7 +408,6 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     }
 
     .quiz-options {
@@ -441,52 +427,39 @@
       cursor: pointer;
     }
 
-    .quiz-btn.correct {
-      background: #d7ffb8;
-      border-color: var(--primary);
-      color: var(--primary-dark);
-    }
-
-    .quiz-btn.wrong {
-      background: #ffdfe0;
-      border-color: var(--danger);
-      color: #c53030;
-    }
+    .quiz-btn.correct { background: #d7ffb8; border-color: var(--primary); color: var(--primary-dark); }
+    .quiz-btn.wrong { background: #ffdfe0; border-color: var(--danger); color: #c53030; }
   </style>
 </head>
 <body>
 
 <div class="app-container">
-  <!-- Header -->
   <div class="header">
-    <div class="brand">🤟 VSL Quest 2.1</div>
+    <div class="brand">🤟 VSL Quest 2.2</div>
     <div class="stats-bar">
       <div class="pill pill-done">✅ <span id="done-count">0</span>/10</div>
       <div class="pill pill-xp">⭐ <span id="xp-score">0</span> XP</div>
     </div>
   </div>
 
-  <!-- Navigation -->
   <div class="nav-tabs">
     <button class="tab-btn active" onclick="switchTab('camera')">📷 Thực hành AI</button>
     <button class="tab-btn" onclick="switchTab('dict')">📚 Từ điển</button>
     <button class="tab-btn" onclick="switchTab('quiz')">🧩 Trắc nghiệm</button>
   </div>
 
-  <!-- TAB 1: THỰC HÀNH CAMERA AI -->
+  <!-- TAB 1: CAMERA AI -->
   <div id="tab-camera" class="content">
     <div class="level-selector" id="level-chips"></div>
 
     <div class="prompt-card">
       <div class="prompt-top">
-        <!-- Khung hiển thị hình vẽ bàn tay SVG chính xác -->
         <div class="svg-icon-box" id="target-svg"></div>
         <div class="prompt-info">
           <div class="prompt-title" id="target-title">Chữ B</div>
-          <div class="prompt-desc" id="target-desc">Mô tả động tác</div>
+          <div class="prompt-desc" id="target-desc">Duỗi thẳng và khép sát 4 ngón (Trỏ, Giữa, Áp út, Út). Ngón cái gập ngang lòng bàn tay.</div>
         </div>
       </div>
-      <!-- Sơ đồ 5 ngón tay (Cái - Trỏ - Giữa - Áp út - Út) -->
       <div class="finger-guide" id="finger-guide"></div>
     </div>
 
@@ -496,12 +469,16 @@
         <button class="icon-btn" onclick="toggleSkeleton()" id="btn-skeleton">🦴 Khung xương: Bật</button>
       </div>
 
+      <button class="start-cam-overlay hidden" id="btn-manual-cam" onclick="startCamera()">
+        📷 Chạm vào đây để bật Camera
+      </button>
+
       <div class="camera-stage">
-        <video id="input-video" class="mirror" playsinline muted autoplay></video>
+        <video id="input-video" class="mirror" playsinline webkit-playsinline muted autoplay></video>
         <canvas id="output-canvas" class="mirror"></canvas>
       </div>
 
-      <div class="ai-badge" id="ai-status">⏳ Đang khởi động Camera & AI...</div>
+      <div class="ai-badge" id="ai-status">⏳ Đang mở Camera...</div>
     </div>
 
     <div class="progress-section">
@@ -517,10 +494,10 @@
     <button class="btn-main" onclick="nextLevel()">Chuyển ký hiệu tiếp theo ➔</button>
   </div>
 
-  <!-- TAB 2: TỪ ĐIỂN VSL -->
+  <!-- TAB 2: TỪ ĐIỂN -->
   <div id="tab-dict" class="content hidden">
     <div style="font-size:0.86rem; color:var(--muted);">
-      Hình vẽ mô phỏng chính xác vị trí 5 ngón tay. Bấm vào thẻ bất kỳ để mở Camera thực hành:
+      Hình vẽ mô phỏng vị trí 5 ngón tay. Bấm vào thẻ bất kỳ để mở Camera thực hành:
     </div>
     <div class="dict-grid" id="dict-list"></div>
   </div>
@@ -532,9 +509,7 @@
         🔥 Chuỗi trả lời đúng: <span id="quiz-streak">0</span>
       </div>
       <div class="quiz-svg-holder" id="quiz-svg"></div>
-      <div id="quiz-question" style="font-size:0.95rem; font-weight:600; line-height:1.4; color:#334155;">
-        Quan sát hình bàn tay và mô tả trên để chọn đáp án đúng
-      </div>
+      <div id="quiz-question" style="font-size:0.95rem; font-weight:600; line-height:1.4; color:#334155;"></div>
     </div>
 
     <div class="quiz-options" id="quiz-options"></div>
@@ -544,16 +519,15 @@
 </div>
 
 <script>
-  // ================= 1. BỘ VẼ HÌNH BÀN TAY VECTOR (SVG) CHUẨN VSL =================
-  // Tự động vẽ bàn tay giải phẫu rõ ràng: Ngón mở (sáng), Ngón gập (cụp xuống lòng bàn tay)
-  function renderHandSVG(signId, size = 76) {
-    const skinLight = "#FFCC99";   // Màu ngón tay duỗi & lòng bàn tay
-    const skinFold  = "#E69A58";   // Màu ngón tay gập xuống (đậm hơn để dễ phân biệt)
-    const strokeCol = "#7C2D12";   // Viền nét vẽ rõ ràng
-    const nailCol   = "#FFF5EB";   // Móng tay / Đốt khớp
+  // ================= 1. HÀM VẼ HÌNH BÀN TAY SVG CHUẨN VSL =================
+  function renderHandSVG(signId, size) {
+    size = size || 76;
+    var skinLight = "#FFCC99";
+    var skinFold  = "#E69A58";
+    var strokeCol = "#7C2D12";
+    var nailCol   = "#FFF5EB";
 
-    // Cấu hình từng ngón cho 10 ký hiệu
-    const configs = {
+    var configs = {
       B: {
         thumb: "FOLD_ACROSS",
         fingers: [
@@ -582,7 +556,7 @@
           { x: 68, open: false },
           { x: 80, open: false }
         ],
-        badge: `<path d="M44 26 L62 26" stroke="#0284c7" stroke-width="2.5" stroke-dasharray="2,2"/>`
+        badge: '<path d="M44 26 L62 26" stroke="#0284c7" stroke-width="2.5" stroke-dasharray="2,2"/>'
       },
       U: {
         thumb: "FOLD_LOW",
@@ -592,7 +566,7 @@
           { x: 68, open: false },
           { x: 80, open: false }
         ],
-        badge: `<path d="M36 26 L43 26 M69 26 L62 26" stroke="#16a34a" stroke-width="2.5"/>`
+        badge: '<path d="M36 26 L43 26 M69 26 L62 26" stroke="#16a34a" stroke-width="2.5"/>'
       },
       D: {
         thumb: "FOLD_TOUCH",
@@ -632,7 +606,7 @@
           { x: 68, open: false },
           { x: 80, open: false }
         ],
-        badge: `<path d="M36 48 L36 60 L24 60" fill="none" stroke="#16a34a" stroke-width="2.5"/>`
+        badge: '<path d="M36 48 L36 60 L24 60" fill="none" stroke="#16a34a" stroke-width="2.5"/>'
       },
       A: {
         thumb: "SIDE_UP",
@@ -656,42 +630,380 @@
       }
     };
 
-    const cfg = configs[signId] || configs.B;
-
-    // 1. Vẽ các ngón duỗi (Nằm lớp dưới lòng bàn tay)
-    let openFingersSVG = "";
-    cfg.fingers.forEach(f => {
+    var cfg = configs[signId] || configs.B;
+    var openFingersSVG = "";
+    for (var i = 0; i < cfg.fingers.length; i++) {
+      var f = cfg.fingers[i];
       if (f.open) {
-        const cx = f.x + 5.5;
-        const cy = 56;
-        openFingersSVG += `
-          <g transform="rotate(${f.angle}, ${cx},${cy})">
-            <rect x="${f.x}" y="${f.y}" width="11" height="${f.h}" rx="5.5"
-                  fill="${skinLight}" stroke="${strokeCol}" stroke-width="2.2"/>
-            <rect x="${f.x + 2.2}" y="${f.y + 3}" width="6.6" height="7" rx="3"
-                  fill="${nailCol}" opacity="0.85"/>
-            <line x1="${f.x + 2}" y1="${f.y + f.h * 0.48}" x2="${f.x + 9}" y2="${f.y + f.h * 0.48}"
-                  stroke="${strokeCol}" stroke-width="1.3" opacity="0.45"/>
-          </g>`;
+        var cx = f.x + 5.5;
+        openFingersSVG += '<g transform="rotate(' + f.angle + ', ' + cx + ', 56)">' +
+          '<rect x="' + f.x + '" y="' + f.y + '" width="11" height="' + f.h + '" rx="5.5" fill="' + skinLight + '" stroke="' + strokeCol + '" stroke-width="2.2"/>' +
+          '<rect x="' + (f.x + 2.2) + '" y="' + (f.y + 3) + '" width="6.6" height="7" rx="3" fill="' + nailCol + '" opacity="0.85"/>' +
+          '</g>';
       }
+    }
+
+    var thumbBackSVG = "";
+    if (cfg.thumb === "OPEN_WIDE") {
+      thumbBackSVG = '<g transform="rotate(-48, 38, 76)"><rect x="28" y="38" width="12" height="40" rx="6" fill="' + skinLight + '" stroke="' + strokeCol + '" stroke-width="2.2"/></g>';
+    } else if (cfg.thumb === "OPEN_L") {
+      thumbBackSVG = '<g transform="rotate(-76, 38, 74)"><rect x="30" y="36" width="12" height="42" rx="6" fill="' + skinLight + '" stroke="' + strokeCol + '" stroke-width="2.2"/></g>';
+    } else if (cfg.thumb === "SIDE_UP") {
+      thumbBackSVG = '<rect x="27" y="42" width="12" height="38" rx="6" fill="' + skinLight + '" stroke="' + strokeCol + '" stroke-width="2.2"/>';
+    }
+
+    var palmSVG = '<rect x="36" y="50" width="54" height="50" rx="16" fill="' + skinLight + '" stroke="' + strokeCol + '" stroke-width="2.2"/>' +
+                  '<path d="M44 78 Q63 68 82 76" fill="none" stroke="' + strokeCol + '" stroke-width="1.4" opacity="0.35"/>';
+
+    var foldedFingersSVG = "";
+    for (var j = 0; j < cfg.fingers.length; j++) {
+      var ff = cfg.fingers[j];
+      if (!ff.open) {
+        foldedFingersSVG += '<g>' +
+          '<rect x="' + ff.x + '" y="47" width="11.5" height="28" rx="5.5" fill="' + skinFold + '" stroke="' + strokeCol + '" stroke-width="2.2"/>' +
+          '<rect x="' + (ff.x + 2.5) + '" y="66" width="6.5" height="5.5" rx="2.5" fill="' + nailCol + '" opacity="0.75"/>' +
+          '</g>';
+      }
+    }
+
+    var thumbFrontSVG = "";
+    if (cfg.thumb === "FOLD_ACROSS") {
+      thumbFrontSVG = '<g transform="rotate(68, 42, 78)"><rect x="36" y="44" width="12" height="38" rx="6" fill="' + skinFold + '" stroke="' + strokeCol + '" stroke-width="2.2"/></g>';
+    } else if (cfg.thumb === "FOLD_LOW" || cfg.thumb === "FOLD_TOUCH") {
+      thumbFrontSVG = '<g transform="rotate(55, 42, 80)"><rect x="38" y="44" width="11.5" height="36" rx="5.5" fill="' + skinFold + '" stroke="' + strokeCol + '" stroke-width="2.2"/></g>';
+    }
+
+    return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 115 110" xmlns="http://www.w3.org/2000/svg">' +
+      openFingersSVG + thumbBackSVG + palmSVG + foldedFingersSVG + thumbFrontSVG + cfg.badge + '</svg>';
+  }
+
+  // ================= 2. DỮ LIỆU 10 KÝ HIỆU VSL =================
+  var VSL_DATA = [
+    { id: "B", title: "Chữ B", desc: "Duỗi thẳng và khép sát 4 ngón (Trỏ, Giữa, Áp út, Út). Ngón cái gập ngang lòng bàn tay.", fingersState: [false, true, true, true, true] },
+    { id: "HELLO", title: "Xin chào / Số 5", desc: "Xòe rộng cả 5 ngón tay hướng thẳng về phía trước.", fingersState: [true, true, true, true, true] },
+    { id: "V", title: "Chữ V / Số 2", desc: "Duỗi ngón Trỏ và ngón Giữa tách ra hình chữ V. Các ngón còn lại gập vào lòng bàn tay.", fingersState: [false, true, true, false, false] },
+    { id: "U", title: "Chữ U", desc: "Duỗi thẳng ngón Trỏ và ngón Giữa KHÉP SÁT nhau. Ngón Cái, Áp út và Út gập lại.", fingersState: [false, true, true, false, false] },
+    { id: "D", title: "Chữ D / Số 1", desc: "Chỉ giơ thẳng duy nhất ngón Trỏ lên trên. 4 ngón còn lại nắm gọn.", fingersState: [false, true, false, false, false] },
+    { id: "I", title: "Chữ I", desc: "Nắm bàn tay lại, chỉ duỗi thẳng duy nhất ngón Út hướng lên trên.", fingersState: [false, false, false, false, true] },
+    { id: "Y", title: "Chữ Y", desc: "Mở rộng ngón Cái và ngón Út ra hai bên. Gập 3 ngón giữa (Trỏ, Giữa, Áp út) xuống.", fingersState: [true, false, false, false, true] },
+    { id: "L", title: "Chữ L", desc: "Duỗi thẳng ngón Trỏ lên trên và mở ngón Cái ngang ra tạo góc vuông chữ L (90°).", fingersState: [true, true, false, false, false] },
+    { id: "A", title: "Chữ A", desc: "Gập 4 ngón dài vào lòng bàn tay. Ngón Cái dựng thẳng áp sát bên cạnh ngón Trỏ.", fingersState: [true, false, false, false, false] },
+    { id: "ILY", title: "Yêu thương (ILY)", desc: "Mở đồng thời 3 ngón: Cái, Trỏ và Út. Gập 2 ngón Giữa và Áp út xuống.", fingersState: [true, true, false, false, true] }
+  ];
+
+  var FINGER_NAMES = ["Cái", "Trỏ", "Giữa", "Áp út", "Út"];
+
+  // ================= 3. KHỞI TẠO GIAO DIỆN NGAY LẬP TỨC (TRƯỚC KHI TẢI AI) =================
+  var xp = 0;
+  var completedSigns = [];
+  try {
+    xp = parseInt(localStorage.getItem("vsl_xp") || "0", 10) || 0;
+    completedSigns = JSON.parse(localStorage.getItem("vsl_done") || "[]") || [];
+  } catch (e) {}
+
+  var currentIdx = 0;
+  var holdFrames = 0;
+  var REQUIRED_FRAMES = 14;
+  var showSkeleton = true;
+  var facingMode = "user";
+  var currentStream = null;
+  var isProcessingAI = false;
+  var lastAITime = 0;
+  var quizStreak = 0;
+  var handsAI = null;
+
+  function updateStatsUI() {
+    document.getElementById("xp-score").innerText = xp;
+    document.getElementById("done-count").innerText = completedSigns.length;
+    try {
+      localStorage.setItem("vsl_xp", xp);
+      localStorage.setItem("vsl_done", JSON.stringify(completedSigns));
+    } catch (e) {}
+    renderLevelChips();
+    renderDict();
+  }
+
+  function renderLevelChips() {
+    var container = document.getElementById("level-chips");
+    container.innerHTML = "";
+    VSL_DATA.forEach(function(item, idx) {
+      var btn = document.createElement("button");
+      var isDone = completedSigns.indexOf(item.id) !== -1;
+      btn.className = "level-chip " + (idx === currentIdx ? "active " : "") + (isDone ? "completed" : "");
+      btn.innerText = (isDone ? "✓ " : "") + item.title;
+      btn.onclick = function() { selectLevel(idx); };
+      container.appendChild(btn);
+    });
+  }
+
+  function selectLevel(idx) {
+    currentIdx = idx;
+    var item = VSL_DATA[currentIdx];
+    document.getElementById("target-svg").innerHTML = renderHandSVG(item.id, 78);
+    document.getElementById("target-title").innerText = item.title;
+    document.getElementById("target-desc").innerText = item.desc;
+
+    var guideEl = document.getElementById("finger-guide");
+    guideEl.innerHTML = item.fingersState.map(function(isOpen, i) {
+      return '<div class="finger-pill ' + (isOpen ? 'open' : '') + '">' +
+        FINGER_NAMES[i] + ': ' + (isOpen ? 'Mở' : 'Gập') + '</div>';
+    }).join("");
+
+    holdFrames = 0;
+    setHoldProgress(0);
+    renderLevelChips();
+  }
+
+  function nextLevel() {
+    selectLevel((currentIdx + 1) % VSL_DATA.length);
+  }
+
+  function setHoldProgress(percent) {
+    var p = Math.min(100, Math.max(0, Math.round(percent)));
+    document.getElementById("hold-bar").style.width = p + "%";
+    document.getElementById("hold-percent").innerText = p + "%";
+  }
+
+  function switchTab(tab) {
+    var tabs = ["camera", "dict", "quiz"];
+    var btns = document.querySelectorAll(".tab-btn");
+    for (var i = 0; i < tabs.length; i++) {
+      btns[i].classList.toggle("active", tabs[i] === tab);
+      document.getElementById("tab-" + tabs[i]).classList.toggle("hidden", tabs[i] !== tab);
+    }
+    if (tab === "quiz") generateQuiz();
+  }
+
+  function renderDict() {
+    var list = document.getElementById("dict-list");
+    list.innerHTML = "";
+    VSL_DATA.forEach(function(item, idx) {
+      var isDone = completedSigns.indexOf(item.id) !== -1;
+      var card = document.createElement("div");
+      card.className = "dict-card";
+      card.style.cursor = "pointer";
+      card.onclick = function() {
+        selectLevel(idx);
+        switchTab("camera");
+      };
+      card.innerHTML = '<div class="dict-svg">' + renderHandSVG(item.id, 62) + '</div>' +
+        '<div class="dict-body"><div class="dict-title">' + item.title + (isDone ? " ✅" : "") + '</div>' +
+        '<div class="dict-desc">' + item.desc + '</div></div>';
+      list.appendChild(card);
+    });
+  }
+
+  function generateQuiz() {
+    var feedback = document.getElementById("quiz-feedback");
+    feedback.innerText = "";
+    var correct = VSL_DATA[Math.floor(Math.random() * VSL_DATA.length)];
+    document.getElementById("quiz-svg").innerHTML = renderHandSVG(correct.id, 110);
+    document.getElementById("quiz-question").innerText = correct.desc;
+
+    var pool = VSL_DATA.slice().sort(function() { return 0.5 - Math.random(); }).slice(0, 4);
+    if (!pool.some(function(x) { return x.id === correct.id; })) pool[0] = correct;
+    pool.sort(function() { return 0.5 - Math.random(); });
+
+    var container = document.getElementById("quiz-options");
+    container.innerHTML = "";
+    pool.forEach(function(item) {
+      var btn = document.createElement("button");
+      btn.className = "quiz-btn";
+      btn.innerText = item.title;
+      btn.onclick = function() {
+        if (item.id === correct.id) {
+          btn.classList.add("correct");
+          quizStreak++;
+          xp += 10;
+          updateStatsUI();
+          document.getElementById("quiz-streak").innerText = quizStreak;
+          feedback.style.color = "#46a302";
+          feedback.innerText = "🎉 Chính xác! +10 XP";
+        } else {
+          btn.classList.add("wrong");
+          quizStreak = 0;
+          document.getElementById("quiz-streak").innerText = quizStreak;
+          feedback.style.color = "#e53e3e";
+          feedback.innerText = "❌ Chưa đúng! Đáp án là: " + correct.title;
+        }
+      };
+      container.appendChild(btn);
+    });
+  }
+
+  // VẼ GIAO DIỆN NGAY LẬP TỨC ĐỂ KHÔNG BAO GIỜ BỊ Ô TRẮNG
+  updateStatsUI();
+  selectLevel(0);
+
+  // ================= 4. CAMERA & THUẬT TOÁN AI (TƯƠNG THÍCH SAFARI iOS) =================
+  var videoEl = document.getElementById("input-video");
+  var canvasEl = document.getElementById("output-canvas");
+  var ctx = canvasEl.getContext("2d");
+  var statusEl = document.getElementById("ai-status");
+  var manualCamBtn = document.getElementById("btn-manual-cam");
+
+  function dist(p1, p2) {
+    return Math.hypot(p1.x - p2.x, p1.y - p2.y);
+  }
+
+  function detectVSLSign(lm) {
+    var wrist = lm[0];
+    var palmSize = dist(wrist, lm[9]);
+    var indexOpen  = dist(wrist, lm[8])  > dist(wrist, lm[6])  * 1.15;
+    var middleOpen = dist(wrist, lm[12]) > dist(wrist, lm[10]) * 1.15;
+    var ringOpen   = dist(wrist, lm[16]) > dist(wrist, lm[14]) * 1.15;
+    var pinkyOpen  = dist(wrist, lm[20]) > dist(wrist, lm[18]) * 1.15;
+    var thumbSpread = dist(lm[4], lm[17]) > dist(lm[5], lm[17]) * 1.28;
+    var indexMiddleGap = dist(lm[8], lm[12]) / palmSize;
+
+    if (indexOpen && middleOpen && ringOpen && pinkyOpen) return thumbSpread ? "HELLO" : "B";
+    if (indexOpen && middleOpen && !ringOpen && !pinkyOpen) return indexMiddleGap > 0.32 ? "V" : "U";
+    if (thumbSpread && indexOpen && !middleOpen && !ringOpen && pinkyOpen) return "ILY";
+    if (indexOpen && !middleOpen && !ringOpen && !pinkyOpen) return thumbSpread ? "L" : "D";
+    if (!indexOpen && !middleOpen && !ringOpen && pinkyOpen) return thumbSpread ? "Y" : "I";
+    if (!indexOpen && !middleOpen && !ringOpen && !pinkyOpen) return "A";
+    return "UNKNOWN";
+  }
+
+  async function startCamera() {
+    manualCamBtn.classList.add("hidden");
+    if (currentStream) {
+      currentStream.getTracks().forEach(function(t) { t.stop(); });
+    }
+
+    var isFront = facingMode === "user";
+    videoEl.classList.toggle("mirror", isFront);
+    canvasEl.classList.toggle("mirror", isFront);
+
+    try {
+      statusEl.innerText = "⏳ Đang xin quyền mở Camera...";
+      currentStream = await navigator.mediaDevices.getUserMedia({
+        audio: false,
+        video: { facingMode: facingMode, width: { ideal: 640 }, height: { ideal: 480 } }
+      });
+      videoEl.srcObject = currentStream;
+      await videoEl.play();
+      statusEl.innerText = handsAI ? "✋ Đưa 1 bàn tay vào khung hình Camera" : "⏳ Camera đã bật! Đang nạp bộ não AI...";
+      requestAnimationFrame(processVideoLoop);
+    } catch (err) {
+      manualCamBtn.classList.remove("hidden");
+      statusEl.innerText = "⚠️ Hãy bấm nút 'Chạm vào đây để bật Camera' ở giữa màn hình";
+      statusEl.style.background = "rgba(229, 62, 62, 0.9)";
+    }
+  }
+
+  function loadScript(src) {
+    return new Promise(function(resolve, reject) {
+      var s = document.createElement("script");
+      s.src = src;
+      s.crossOrigin = "anonymous";
+      s.onload = resolve;
+      s.onerror = reject;
+      document.head.appendChild(s);
+    });
+  }
+
+  async function initAIMediaPipe() {
+    var cdnBase = "https://cdn.jsdelivr.net/npm/@mediapipe";
+    try {
+      await loadScript(cdnBase + "/drawing_utils/drawing_utils.js");
+      await loadScript(cdnBase + "/hands/hands.js");
+    } catch (e) {
+      cdnBase = "https://unpkg.com/@mediapipe";
+      await loadScript(cdnBase + "/drawing_utils/drawing_utils.js");
+      await loadScript(cdnBase + "/hands/hands.js");
+    }
+
+    handsAI = new Hands({
+      locateFile: function(file) { return cdnBase + "/hands/" + file; }
     });
 
-    // 2. Vẽ ngón cái nếu mở ra ngoài hoặc áp sát bên cạnh
-    let thumbBackSVG = "";
-    if (cfg.thumb === "OPEN_WIDE") {
-      thumbBackSVG = `
-        <g transform="rotate(-48, 38, 76)">
-          <rect x="28" y="38" width="12" height="40" rx="6"
-                fill="${skinLight}" stroke="${strokeCol}" stroke-width="2.2"/>
-          <rect x="30.5" y="41" width="7" height="7" rx="3" fill="${nailCol}" opacity="0.85"/>
-        </g>`;
-    } else if (cfg.thumb === "OPEN_L") {
-      thumbBackSVG = `
-        <g transform="rotate(-76, 38, 74)">
-          <rect x="30" y="36" width="12" height="42" rx="6"
-                fill="${skinLight}" stroke="${strokeCol}" stroke-width="2.2"/>
-          <rect x="32.5" y="39" width="7" height="7" rx="3" fill="${nailCol}" opacity="0.85"/>
-        </g>`;
-    } else if (cfg.thumb === "SIDE_UP") {
-      thumbBackSVG = `
-        <rect x="27" y="42" width="12" height="38
+    handsAI.setOptions({
+      maxNumHands: 1,
+      modelComplexity: 0,
+      minDetectionConfidence: 0.55,
+      minTrackingConfidence: 0.55
+    });
+
+    handsAI.onResults(function(results) {
+      if (canvasEl.width !== videoEl.videoWidth || canvasEl.height !== videoEl.videoHeight) {
+        canvasEl.width = videoEl.videoWidth;
+        canvasEl.height = videoEl.videoHeight;
+      }
+      ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
+
+      if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+        var lm = results.multiHandLandmarks[0];
+        if (showSkeleton && window.drawConnectors && window.HAND_CONNECTIONS) {
+          drawConnectors(ctx, lm, HAND_CONNECTIONS, { color: "#58cc02", lineWidth: 3 });
+          drawLandmarks(ctx, lm, { color: "#ffffff", fillColor: "#1cb0f6", lineWidth: 1, radius: 3 });
+        }
+
+        var detected = detectVSLSign(lm);
+        var target = VSL_DATA[currentIdx];
+
+        if (detected === target.id) {
+          holdFrames++;
+          setHoldProgress((holdFrames / REQUIRED_FRAMES) * 100);
+          statusEl.innerText = "✅ Chính xác (" + target.title + ")! Giữ nguyên tay...";
+          statusEl.style.background = "rgba(70, 163, 2, 0.88)";
+
+          if (holdFrames >= REQUIRED_FRAMES) {
+            xp += 20;
+            if (completedSigns.indexOf(target.id) === -1) completedSigns.push(target.id);
+            updateStatsUI();
+            statusEl.innerText = "🎉 Tuyệt vời! +20 XP";
+            holdFrames = 0;
+            setTimeout(nextLevel, 650);
+          }
+        } else {
+          holdFrames = Math.max(0, holdFrames - 1);
+          setHoldProgress((holdFrames / REQUIRED_FRAMES) * 100);
+          var foundObj = VSL_DATA.find(function(item) { return item.id === detected; });
+          statusEl.innerText = foundObj
+            ? "🤖 AI nhận thấy: " + foundObj.title + " (Cần làm: " + target.title + ")"
+            : "🤖 Hãy đặt các ngón tay theo hình vẽ hướng dẫn ở trên";
+          statusEl.style.background = "rgba(15, 23, 42, 0.86)";
+        }
+      } else {
+        holdFrames = Math.max(0, holdFrames - 1);
+        setHoldProgress((holdFrames / REQUIRED_FRAMES) * 100);
+        statusEl.innerText = "✋ Đưa 1 bàn tay vào khung hình Camera";
+        statusEl.style.background = "rgba(15, 23, 42, 0.86)";
+      }
+    });
+  }
+
+  async function processVideoLoop(timestamp) {
+    if (
+      !document.getElementById("tab-camera").classList.contains("hidden") &&
+      videoEl.readyState >= 2 &&
+      handsAI &&
+      !isProcessingAI &&
+      timestamp - lastAITime > 65
+    ) {
+      isProcessingAI = true;
+      lastAITime = timestamp;
+      try {
+        await handsAI.send({ image: videoEl });
+      } catch (e) {}
+      isProcessingAI = false;
+    }
+    requestAnimationFrame(processVideoLoop);
+  }
+
+  function toggleCameraFacing() {
+    facingMode = facingMode === "user" ? "environment" : "user";
+    startCamera();
+  }
+
+  function toggleSkeleton() {
+    showSkeleton = !showSkeleton;
+    document.getElementById("btn-skeleton").innerText = "🦴 Khung xương: " + (showSkeleton ? "Bật" : "Tắt");
+  }
+
+  startCamera();
+  initAIMediaPipe();
+</script>
+</body>
+</html>
