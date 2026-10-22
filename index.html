@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#58cc02" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <title>VSL Quest 2.1 - Học Ngôn Ngữ Ký Hiệu Việt Nam</title>
+
+  <!-- Thư viện Google MediaPipe Hands -->
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+
+  <style>
+    :root {
+      --primary: #58cc02;
+      --primary-dark: #46a302;
+      --secondary: #1cb0f6;
+      --secondary-dark: #1899d6;
+      --warning: #ff9600;
+      --danger: #ff4b4b;
+      --bg: #f0f4f8;
+      --card: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      min-height: 100dvh;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 480px;
+      background: var(--card);
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.08);
+    }
+
+    /* Header */
+    .header {
+      padding: 12px 16px;
+      background: var(--card);
+      border-bottom: 2px solid #edf2f7;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .stats-bar {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .pill {
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .pill-xp { background: #fffaf0; color: var(--warning); border: 1px solid #feebc8; }
+    .pill-done { background: #f0fff4; color: var(--primary-dark); border: 1px solid #c6f6d5; }
+
+    /* Navigation Tabs */
+    .nav-tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      padding: 10px 14px;
+      background: #f8fafc;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .tab-btn {
+      padding: 9px 6px;
+      border: none;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      background: #e2e8f0;
+      color: #475569;
+      transition: all 0.2s;
+    }
+
+    .tab-btn.active {
+      background: var(--secondary);
+      color: #fff;
+      box-shadow: 0 3px 0 var(--secondary-dark);
+    }
+
+    /* Content */
+    .content {
+      flex: 1;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      overflow-y: auto;
+    }
+
+    .hidden { display: none !important; }
+
+    /* Thanh chọn nhanh ký hiệu */
+    .level-selector {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scrollbar-width: none;
+    }
+    .level-selector::-webkit-scrollbar { display: none; }
+
+    .level-chip {
+      flex-shrink: 0;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      border: 2px solid #e2e8f0;
+      background: #fff;
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .level-chip.active {
+      border-color: var(--secondary);
+      background: #ebf8ff;
+      color: var(--secondary-dark);
+    }
+
+    .level-chip.completed {
+      border-color: var(--primary);
+      background: #f0fff4;
+      color: var(--primary-dark);
+    }
+
+    /* Thẻ hướng dẫn kèm Icon SVG chuẩn */
+    .prompt-card {
+      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+      border: 2px solid #bae6fd;
+      border-radius: 16px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .prompt-top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .svg-icon-box {
+      width: 82px;
+      height: 82px;
+      background: #ffffff;
+      border: 2px solid #93c5fd;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.06);
+      overflow: hidden;
+    }
+
+    .prompt-info { flex: 1; }
+    .prompt-title {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #0369a1;
+      margin-bottom: 3px;
+    }
+    .prompt-desc {
+      font-size: 0.85rem;
+      color: #334155;
+      line-height: 1.35;
+    }
+
+    /* Sơ đồ 5 ngón tay trực quan */
+    .finger-guide {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 5px;
+      background: rgba(255, 255, 255, 0.75);
+      padding: 6px;
+      border-radius: 10px;
+    }
+
+    .finger-pill {
+      text-align: center;
+      padding: 4px 2px;
+      border-radius: 7px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      border: 1px solid #cbd5e1;
+      background: #f1f5f9;
+      color: #64748b;
+    }
+
+    .finger-pill.open {
+      background: #dcfce7;
+      border-color: #4ade80;
+      color: #15803d;
+    }
+
+    /* Khung Camera chống méo 100% */
+    .camera-outer {
+      width: 100%;
+      background: #0f172a;
+      border-radius: 18px;
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 240px;
+      border: 3px solid #cbd5e0;
+    }
+
+    .camera-stage {
+      position: relative;
+      display: inline-block;
+      max-width: 100%;
+    }
+
+    #input-video {
+      display: block;
+      max-width: 100%;
+      max-height: 40dvh;
+      width: auto;
+      height: auto;
+    }
+
+    #output-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .mirror { transform: scaleX(-1); }
+
+    .camera-controls {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      display: flex;
+      gap: 8px;
+      z-index: 10;
+    }
+
+    .icon-btn {
+      background: rgba(15, 23, 42, 0.75);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.25);
+      padding: 6px 10px;
+      border-radius: 10px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      backdrop-filter: blur(4px);
+    }
+
+    .ai-badge {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      right: 10px;
+      background: rgba(15, 23, 42, 0.84);
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 10px;
+      font-size: 0.84rem;
+      font-weight: 600;
+      text-align: center;
+      backdrop-filter: blur(4px);
+    }
+
+    /* Thanh giữ tư thế */
+    .progress-section {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 13px;
+      background: #e2e8f0;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #58cc02, #89e219);
+      transition: width 0.08s linear;
+    }
+
+    .btn-main {
+      width: 100%;
+      padding: 13px;
+      border: none;
+      border-radius: 14px;
+      background: var(--primary);
+      box-shadow: 0 4px 0 var(--primary-dark);
+      color: white;
+      font-size: 0.95rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .btn-main:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 var(--primary-dark);
+    }
+
+    /* Từ điển (Flashcards) */
+    .dict-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .dict-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border: 2px solid #e2e8f0;
+      border-radius: 14px;
+      background: #fff;
+      transition: 0.15s;
+    }
+
+    .dict-card:active {
+      background: #f0f9ff;
+      border-color: var(--secondary);
+    }
+
+    .dict-svg {
+      width: 68px;
+      height: 68px;
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .dict-body { flex: 1; }
+    .dict-title { font-weight: 800; font-size: 1rem; color: var(--text); }
+    .dict-desc { font-size: 0.82rem; color: var(--muted); margin-top: 3px; line-height: 1.3; }
+
+    /* Trắc nghiệm */
+    .quiz-box {
+      background: #f8fafc;
+      border: 2px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 10px;
+    }
+
+    .quiz-svg-holder {
+      width: 120px;
+      height: 120px;
+      background: #fff;
+      border: 2px solid #bae6fd;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+    .quiz-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .quiz-btn {
+      padding: 15px 10px;
+      border: 2px solid #e2e8f0;
+      box-shadow: 0 3px 0 #cbd5e0;
+      border-radius: 14px;
+      background: #fff;
+      font-size: 0.98rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .quiz-btn.correct {
+      background: #d7ffb8;
+      border-color: var(--primary);
+      color: var(--primary-dark);
+    }
+
+    .quiz-btn.wrong {
+      background: #ffdfe0;
+      border-color: var(--danger);
+      color: #c53030;
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-container">
+  <!-- Header -->
+  <div class="header">
+    <div class="brand">🤟 VSL Quest 2.1</div>
+    <div class="stats-bar">
+      <div class="pill pill-done">✅ <span id="done-count">0</span>/10</div>
+      <div class="pill pill-xp">⭐ <span id="xp-score">0</span> XP</div>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <div class="nav-tabs">
+    <button class="tab-btn active" onclick="switchTab('camera')">📷 Thực hành AI</button>
+    <button class="tab-btn" onclick="switchTab('dict')">📚 Từ điển</button>
+    <button class="tab-btn" onclick="switchTab('quiz')">🧩 Trắc nghiệm</button>
+  </div>
+
+  <!-- TAB 1: THỰC HÀNH CAMERA AI -->
+  <div id="tab-camera" class="content">
+    <div class="level-selector" id="level-chips"></div>
+
+    <div class="prompt-card">
+      <div class="prompt-top">
+        <!-- Khung hiển thị hình vẽ bàn tay SVG chính xác -->
+        <div class="svg-icon-box" id="target-svg"></div>
+        <div class="prompt-info">
+          <div class="prompt-title" id="target-title">Chữ B</div>
+          <div class="prompt-desc" id="target-desc">Mô tả động tác</div>
+        </div>
+      </div>
+      <!-- Sơ đồ 5 ngón tay (Cái - Trỏ - Giữa - Áp út - Út) -->
+      <div class="finger-guide" id="finger-guide"></div>
+    </div>
+
+    <div class="camera-outer">
+      <div class="camera-controls">
+        <button class="icon-btn" onclick="toggleCameraFacing()">🔄 Đổi Cam</button>
+        <button class="icon-btn" onclick="toggleSkeleton()" id="btn-skeleton">🦴 Khung xương: Bật</button>
+      </div>
+
+      <div class="camera-stage">
+        <video id="input-video" class="mirror" playsinline muted autoplay></video>
+        <canvas id="output-canvas" class="mirror"></canvas>
+      </div>
+
+      <div class="ai-badge" id="ai-status">⏳ Đang khởi động Camera & AI...</div>
+    </div>
+
+    <div class="progress-section">
+      <div class="progress-label">
+        <span>Giữ đúng ký hiệu 1.2 giây để qua bài</span>
+        <span id="hold-percent">0%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="hold-bar"></div>
+      </div>
+    </div>
+
+    <button class="btn-main" onclick="nextLevel()">Chuyển ký hiệu tiếp theo ➔</button>
+  </div>
+
+  <!-- TAB 2: TỪ ĐIỂN VSL -->
+  <div id="tab-dict" class="content hidden">
+    <div style="font-size:0.86rem; color:var(--muted);">
+      Hình vẽ mô phỏng chính xác vị trí 5 ngón tay. Bấm vào thẻ bất kỳ để mở Camera thực hành:
+    </div>
+    <div class="dict-grid" id="dict-list"></div>
+  </div>
+
+  <!-- TAB 3: TRẮC NGHIỆM -->
+  <div id="tab-quiz" class="content hidden">
+    <div class="quiz-box">
+      <div style="font-size:0.85rem; color:var(--muted); font-weight:700;">
+        🔥 Chuỗi trả lời đúng: <span id="quiz-streak">0</span>
+      </div>
+      <div class="quiz-svg-holder" id="quiz-svg"></div>
+      <div id="quiz-question" style="font-size:0.95rem; font-weight:600; line-height:1.4; color:#334155;">
+        Quan sát hình bàn tay và mô tả trên để chọn đáp án đúng
+      </div>
+    </div>
+
+    <div class="quiz-options" id="quiz-options"></div>
+    <div id="quiz-feedback" style="text-align:center; font-weight:800; min-height:24px;"></div>
+    <button class="btn-main" onclick="generateQuiz()">Câu hỏi tiếp theo ➔</button>
+  </div>
+</div>
+
+<script>
+  // ================= 1. BỘ VẼ HÌNH BÀN TAY VECTOR (SVG) CHUẨN VSL =================
+  // Tự động vẽ bàn tay giải phẫu rõ ràng: Ngón mở (sáng), Ngón gập (cụp xuống lòng bàn tay)
+  function renderHandSVG(signId, size = 76) {
+    const skinLight = "#FFCC99";   // Màu ngón tay duỗi & lòng bàn tay
+    const skinFold  = "#E69A58";   // Màu ngón tay gập xuống (đậm hơn để dễ phân biệt)
+    const strokeCol = "#7C2D12";   // Viền nét vẽ rõ ràng
+    const nailCol   = "#FFF5EB";   // Móng tay / Đốt khớp
+
+    // Cấu hình từng ngón cho 10 ký hiệu
+    const configs = {
+      B: {
+        thumb: "FOLD_ACROSS",
+        fingers: [
+          { x: 41, y: 12, h: 46, angle: 0, open: true },
+          { x: 53, y: 8,  h: 50, angle: 0, open: true },
+          { x: 65, y: 12, h: 46, angle: 0, open: true },
+          { x: 77, y: 20, h: 38, angle: 0, open: true }
+        ],
+        badge: ""
+      },
+      HELLO: {
+        thumb: "OPEN_WIDE",
+        fingers: [
+          { x: 40, y: 14, h: 44, angle: -14, open: true },
+          { x: 53, y: 9,  h: 49, angle: -4,  open: true },
+          { x: 66, y: 13, h: 45, angle: 6,   open: true },
+          { x: 78, y: 21, h: 37, angle: 17,  open: true }
+        ],
+        badge: ""
+      },
+      V: {
+        thumb: "FOLD_LOW",
+        fingers: [
+          { x: 43, y: 11, h: 47, angle: -13, open: true },
+          { x: 57, y: 10, h: 48, angle: 13,  open: true },
+          { x: 68, open: false },
+          { x: 80, open: false }
+        ],
+        badge: `<path d="M44 26 L62 26" stroke="#0284c7" stroke-width="2.5" stroke-dasharray="2,2"/>`
+      },
+      U: {
+        thumb: "FOLD_LOW",
+        fingers: [
+          { x: 45, y: 11, h: 47, angle: 0, open: true },
+          { x: 56, y: 9,  h: 49, angle: 0, open: true },
+          { x: 68, open: false },
+          { x: 80, open: false }
+        ],
+        badge: `<path d="M36 26 L43 26 M69 26 L62 26" stroke="#16a34a" stroke-width="2.5"/>`
+      },
+      D: {
+        thumb: "FOLD_TOUCH",
+        fingers: [
+          { x: 42, y: 10, h: 48, angle: 0, open: true },
+          { x: 55, open: false },
+          { x: 67, open: false },
+          { x: 79, open: false }
+        ],
+        badge: ""
+      },
+      I: {
+        thumb: "FOLD_ACROSS",
+        fingers: [
+          { x: 41, open: false },
+          { x: 53, open: false },
+          { x: 65, open: false },
+          { x: 78, y: 16, h: 42, angle: 0, open: true }
+        ],
+        badge: ""
+      },
+      Y: {
+        thumb: "OPEN_WIDE",
+        fingers: [
+          { x: 42, open: false },
+          { x: 54, open: false },
+          { x: 66, open: false },
+          { x: 79, y: 17, h: 41, angle: 14, open: true }
+        ],
+        badge: ""
+      },
+      L: {
+        thumb: "OPEN_L",
+        fingers: [
+          { x: 43, y: 10, h: 48, angle: 0, open: true },
+          { x: 56, open: false },
+          { x: 68, open: false },
+          { x: 80, open: false }
+        ],
+        badge: `<path d="M36 48 L36 60 L24 60" fill="none" stroke="#16a34a" stroke-width="2.5"/>`
+      },
+      A: {
+        thumb: "SIDE_UP",
+        fingers: [
+          { x: 41, open: false },
+          { x: 53, open: false },
+          { x: 65, open: false },
+          { x: 77, open: false }
+        ],
+        badge: ""
+      },
+      ILY: {
+        thumb: "OPEN_WIDE",
+        fingers: [
+          { x: 42, y: 12, h: 46, angle: -4, open: true },
+          { x: 55, open: false },
+          { x: 67, open: false },
+          { x: 79, y: 18, h: 40, angle: 10, open: true }
+        ],
+        badge: ""
+      }
+    };
+
+    const cfg = configs[signId] || configs.B;
+
+    // 1. Vẽ các ngón duỗi (Nằm lớp dưới lòng bàn tay)
+    let openFingersSVG = "";
+    cfg.fingers.forEach(f => {
+      if (f.open) {
+        const cx = f.x + 5.5;
+        const cy = 56;
+        openFingersSVG += `
+          <g transform="rotate(${f.angle}, ${cx},${cy})">
+            <rect x="${f.x}" y="${f.y}" width="11" height="${f.h}" rx="5.5"
+                  fill="${skinLight}" stroke="${strokeCol}" stroke-width="2.2"/>
+            <rect x="${f.x + 2.2}" y="${f.y + 3}" width="6.6" height="7" rx="3"
+                  fill="${nailCol}" opacity="0.85"/>
+            <line x1="${f.x + 2}" y1="${f.y + f.h * 0.48}" x2="${f.x + 9}" y2="${f.y + f.h * 0.48}"
+                  stroke="${strokeCol}" stroke-width="1.3" opacity="0.45"/>
+          </g>`;
+      }
+    });
+
+    // 2. Vẽ ngón cái nếu mở ra ngoài hoặc áp sát bên cạnh
+    let thumbBackSVG = "";
+    if (cfg.thumb === "OPEN_WIDE") {
+      thumbBackSVG = `
+        <g transform="rotate(-48, 38, 76)">
+          <rect x="28" y="38" width="12" height="40" rx="6"
+                fill="${skinLight}" stroke="${strokeCol}" stroke-width="2.2"/>
+          <rect x="30.5" y="41" width="7" height="7" rx="3" fill="${nailCol}" opacity="0.85"/>
+        </g>`;
+    } else if (cfg.thumb === "OPEN_L") {
+      thumbBackSVG = `
+        <g transform="rotate(-76, 38, 74)">
+          <rect x="30" y="36" width="12" height="42" rx="6"
+                fill="${skinLight}" stroke="${strokeCol}" stroke-width="2.2"/>
+          <rect x="32.5" y="39" width="7" height="7" rx="3" fill="${nailCol}" opacity="0.85"/>
+        </g>`;
+    } else if (cfg.thumb === "SIDE_UP") {
+      thumbBackSVG = `
+        <rect x="27" y="42" width="12" height="38
